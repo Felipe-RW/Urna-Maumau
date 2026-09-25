@@ -2,9 +2,9 @@ import sys
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 
-class PopUp_aviso(QMessageBox):
+class PopUpAviso(QMessageBox):
 
-    def popUp_confirmacao(self):
+    def popupConfirmacao(self):
         self.setIcon(QMessageBox.Warning)
         self.setWindowTitle("Confirmar voto")
         self.setText("Deseja confirmar voto?")
@@ -33,7 +33,7 @@ class PopUp_aviso(QMessageBox):
 
 app = QApplication(sys.argv)
 
-popup = PopUp_aviso()
-popup.popUp_confirmacao()
+pop_up = PopUpAviso()
+pop_up.popupConfirmacao()
 
 sys.exit(app.exec())
