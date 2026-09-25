@@ -1,0 +1,18 @@
+candidatos =[
+    #{"nome", numero do candidato, partido, total de votos}
+    {"nome": "Machado de Assis", "numero_candidato": 10 , "partido": "Partido da Ironia (PI)" ,"votos": 0},
+    {"nome": "Guimarães Rosa", "numero_candidato": 20 , "partido": "Partido do Sertão (PS)" ,"votos": 0},
+    {"nome": "José de Alencar", "numero_candidato": 30 , "partido": "Partido dos Heróis (PH)" ,"votos": 0},
+    {"nome": "Graciliano Ramos", "numero_candidato": 40 , "partido": "Partido Sem Flores (PSF)" , "votos": 0},
+    {"nome": "Jorge Amado", "numero_candidato": 50 , "partido": "Partido do Povo (PP)" ,"votos": 0}
+]
+
+eleitores =[
+    #{"nome", numero do candidato, partido, total de votos, booliano}
+    {"nome": "Fernanda Montenegro", "titulo_eleitor": 12 ,"votou:": True},
+    {"nome": "Laura Cardoso", "titulo_eleitor": 34, "votou:": True},
+    {"nome": "Lima Barreto", "titulo_eleitor": 56, "votou:": True},
+    {"nome": "Glória Menezes", "titulo_eleitor": 78, "votou:": True},
+    {"nome": "Tarcísio Meira", "titulo_eleitor": 90, "votou:": True}
+]
+
