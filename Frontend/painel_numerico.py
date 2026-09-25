@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QPushButton
 )
 
-
+#a
 class TecladoUrna(QWidget):
     def __init__(self):
         super().__init__()
