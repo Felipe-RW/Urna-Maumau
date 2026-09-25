@@ -14,4 +14,4 @@ msg.button(QMessageBox.No).setText("Cancelar")
 resposta = msg.exec()
 
 sys.exit(app.exec())
-#PopUp de aviso de confirmar voto
+#Pop-Up de aviso de confirmar voto finalizado.
