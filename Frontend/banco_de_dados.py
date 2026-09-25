@@ -8,7 +8,7 @@ candidatos =[
 ]
 
 eleitores =[
-    #{"nome", titulo do candidato, booliano}
+    #{"nome", titulo do eleitor, booliano}
     {"nome": "Fernanda Montenegro", "titulo_eleitor": 12 ,"votou:": False},
     {"nome": "Laura Cardoso", "titulo_eleitor": 34, "votou:": False},
     {"nome": "Lima Barreto", "titulo_eleitor": 56, "votou:": False},
