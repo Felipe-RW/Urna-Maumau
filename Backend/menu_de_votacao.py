@@ -1,0 +1,4 @@
+from banco_de_dados import candidatos
+from validar_eleitor import ValidarEleitor
+from tela_principal_urna import TelaPrincipalUrna
+
