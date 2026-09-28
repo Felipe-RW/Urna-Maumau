@@ -1,32 +1,14 @@
-from PySide6.QtWidgets import QMessageBox
+from Backend.banco_de_dados import eleitores
+from Frontend.pop_up_aviso import PopUpAviso
 
-
-class CancelamentoVoto:
+class CancelarVoto():
     def __init__(self, eleitor):
-        self.eleitor = eleitor  # -> dicionário da lista eleitores
-        self.digitos = ""    # -> informações digitadas pelo eleitor na votação
-        self.acesso_liberado = False  # -> só libera quando o eleitor confirmar o voto
+        super().__init__()
+        self.eleitor = eleitor
+        self.aviso = PopUpAviso()
 
-    def cancelarVoto(self):
-        popup = QMessageBox()
-        popup.setIcon(QMessageBox.Warning)
-        popup.setWindowTitle("Cancelar voto")
-        popup.setText("Deseja cancelar seu voto?")
-        popup.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        popup.button(QMessageBox.Yes).setText("Sim")
-        popup.button(QMessageBox.No).setText("Não")
-
-        resposta = popup.exec()
-
-        if resposta == QMessageBox.Yes:
-            # reinicia o processo de votação daquele eleitor,
-            # sem salvar as informações digitadas anteriormente
-            self.digitos = ""
+    def cancelarVoto(self, titulo):
+        if self.aviso.popupConfirmacao(titulo):
             self.eleitor["votou"] = False
-
-            # não volta ao menu, volta ao começo do processo de votação
-
             return True
-
-        # clicou em "não", segue de onde parou
         return False
