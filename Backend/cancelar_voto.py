@@ -1,42 +1,33 @@
-import sys
-from PySide6.QtWidgets import QApplication, QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 
-class PopUp(QMessageBox):
-    def popUp_cancelamento(self):
-        self.setIcon(QMessageBox.Warning)
-        self.setWindowTitle("Cancelar voto")
-        self.setText("Deseja cancelar seu voto?\nO que foi digitado será apagado.")
-        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.button(QMessageBox.Yes).setText("Sim")
-        self.button(QMessageBox.No).setText("Não")
-        return self.exec() == QMessageBox.Yes
-
-
-class Votacao:
-    def __init__(self):
-        self.digitos = ""
-        self.candidato = None
-        self.acesso_liberado = False  # só vira True quando o eleitor confirmar o voto
-
-    def reiniciarVotacao(self):
-        # volta ao começo do processo de votação, sem salvar nada
-        self.digitos = ""
-        self.candidato = None
-        # TODO: atualizar a tela para o início da votação (não o menu)
+class CancelamentoVoto:
+    def __init__(self, eleitor):
+        self.eleitor = eleitor      # dicionário da lista eleitores (banco_de_dados.py)
+        self.digitos = ""           # informações digitadas pelo eleitor na votação
+        self.acesso_liberado = False  # só libera quando o eleitor confirmar o voto
 
     def cancelarVoto(self):
-        popup = PopUp()
-        if popup.popUp_cancelamento():
-            self.reiniciarVotacao()
+        popup = QMessageBox()
+        popup.setIcon(QMessageBox.Warning)
+        popup.setWindowTitle("Cancelar voto")
+        popup.setText("Deseja cancelar seu voto?")
+        popup.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        popup.button(QMessageBox.Yes).setText("Sim")
+        popup.button(QMessageBox.No).setText("Não")
+
+        resposta = popup.exec()
+
+        if resposta == QMessageBox.Yes:
+            # reinicia o processo de votação daquele eleitor,
+            # sem salvar as informações digitadas anteriormente
+            self.digitos = ""
+            self.eleitor["votou"] = False
+
+            # não volta ao menu, volta ao começo do processo de votação
+            # (a tela de votação ainda não existe no projeto)
+
             return True
-        return False  # eleitor desistiu de cancelar, segue de onde estava
 
-
-app = QApplication(sys.argv)
-
-votacao = Votacao()
-votacao.digitos = "13"
-votacao.cancelarVoto()
-
-sys.exit(app.exec())
+        # clicou em "não", segue de onde parou
+        return False
