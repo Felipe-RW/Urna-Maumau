@@ -13,7 +13,7 @@ class ValidarEleitor():
                 if eleitor["votou"]:
                     self.aviso.popUp_erro("Este eleitor já votou.")
                     return False
-                return True
+                return eleitor
 
         self.aviso.popUp_erro("Título de eleitor não encontrado")
         return False
