@@ -1,3 +1,4 @@
+
 import sys
 
 from PySide6.QtWidgets import (
@@ -20,7 +21,7 @@ class UrnaEletronica(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Urna Eletrônica - PySide6")
-        self.setFixedSize(1408, 860)
+        self.setFixedSize(1280, 720)
 
         self.tela = QWidget()
         self.tela.setStyleSheet("background-color: #f0f0f0;")
@@ -33,7 +34,7 @@ class UrnaEletronica(QMainWindow):
 
        
         self.painel_esquerdo = QFrame(self.tela)
-        self.painel_esquerdo.setGeometry(30, 28, 782, 754)
+        self.painel_esquerdo.setGeometry(25, 24, 710, 672)
         self.painel_esquerdo.setStyleSheet("""
             QFrame {
                 background-color: #f0f0f0;
@@ -44,9 +45,9 @@ class UrnaEletronica(QMainWindow):
 
         
         self.titulo = QLabel("PRESIDENTE", self.painel_esquerdo)
-        self.titulo.setGeometry(30, 30, 718, 45)
+        self.titulo.setGeometry(27, 27, 652, 40)
 
-        self.titulo.setFont(QFont("Arial", 25, QFont.Weight.Bold))
+        self.titulo.setFont(QFont("Arial", 23, QFont.Weight.Bold))
         self.titulo.setAlignment(
             Qt.AlignmentFlag.AlignVCenter |
             Qt.AlignmentFlag.AlignLeft
@@ -64,10 +65,10 @@ class UrnaEletronica(QMainWindow):
 
         
         self.numero_1 = QLineEdit(self.painel_esquerdo)
-        self.numero_1.setGeometry(30, 114, 60, 75)
+        self.numero_1.setGeometry(27, 102, 55, 68)
         self.numero_1.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.numero_1.setMaxLength(1)
-        self.numero_1.setFont(QFont("Arial", 35, QFont.Weight.Bold))
+        self.numero_1.setFont(QFont("Arial", 32, QFont.Weight.Bold))
         self.numero_1.setStyleSheet("""
             QLineEdit {
                 background-color: white;
@@ -79,10 +80,10 @@ class UrnaEletronica(QMainWindow):
 
         
         self.numero_2 = QLineEdit(self.painel_esquerdo)
-        self.numero_2.setGeometry(98, 114, 60, 75)
+        self.numero_2.setGeometry(89, 102, 55, 68)
         self.numero_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.numero_2.setMaxLength(1)
-        self.numero_2.setFont(QFont("Arial", 35, QFont.Weight.Bold))
+        self.numero_2.setFont(QFont("Arial", 32, QFont.Weight.Bold))
         self.numero_2.setStyleSheet("""
             QLineEdit {
                 background-color: white;
@@ -94,11 +95,23 @@ class UrnaEletronica(QMainWindow):
 
       
         self.campo_informacao = QLabel("", self.painel_esquerdo)
-        self.campo_informacao.setGeometry(30, 226, 718, 38)
+        self.campo_informacao.setGeometry(27, 202, 652, 35)
         self.campo_informacao.setStyleSheet("""
             QLabel {
                 background-color: #eeeeee;
                 border: 2px solid #b8b8b8;
+                border-radius: 5px;
+            }
+        """)
+
+              
+        self.foto_candidato = QFrame(self.painel_esquerdo)
+        self.foto_candidato.setGeometry(400, 255, 250, 300)
+
+        self.foto_candidato.setStyleSheet("""
+            QFrame {
+                background-color: white;
+                border: 2px solid #222222;
                 border-radius: 5px;
             }
         """)
@@ -111,8 +124,8 @@ class UrnaEletronica(QMainWindow):
             self.painel_esquerdo
         )
 
-        self.instrucoes.setGeometry(30, 647, 718, 73)
-        self.instrucoes.setFont(QFont("Arial", 15))
+        self.instrucoes.setGeometry(27, 577, 652, 65)
+        self.instrucoes.setFont(QFont("Arial", 14))
 
         self.instrucoes.setAlignment(
             Qt.AlignmentFlag.AlignLeft |
@@ -133,18 +146,15 @@ class UrnaEletronica(QMainWindow):
 
         
         self.painel_direito = QFrame(self.tela)
-        self.painel_direito.setGeometry(856, 28, 520, 754)
+        self.painel_direito.setGeometry(775, 24, 480, 672)
 
         self.painel_direito.setStyleSheet("""
             QFrame {
-                background-color: #white;
+                background-color: #ffffff;
                 border: 2px solid #111111;
                 border-radius: 10px;
             }
         """)
-
-        
-        
 
 
 if __name__ == "__main__":
@@ -155,3 +165,5 @@ if __name__ == "__main__":
     janela.show()
 
     sys.exit(app.exec())
+
+
