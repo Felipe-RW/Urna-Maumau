@@ -1,13 +1,17 @@
-from banco_de_dados import candidatos, eleitores
-
-
 class ApurarResultado:
-    def __init__(self):
+    def __init__(
+        self,
+        candidatos,
+        eleitores,
+        votos_brancos,
+        votos_nulos,
+        eleicao_aberta
+    ):
         self.candidatos = candidatos
         self.eleitores = eleitores
-        self.votos_brancos = 0
-        self.votos_nulos = 0
-        self.eleicao_aberta = True
+        self.votos_brancos = votos_brancos
+        self.votos_nulos = votos_nulos
+        self.eleicao_aberta = eleicao_aberta
 
 
     def apurarResultado(self):
@@ -81,21 +85,7 @@ class ApurarResultado:
                 situacao = "Eleição finalizada"
                 vencedor = empatados[0]
 
-        eleitores_resultado = []
-
-        for eleitor in self.eleitores:
-
-            if eleitor["votou"]:
-                situacao_eleitor = "Votou"
-            else:
-                situacao_eleitor = "Faltou"
-
-            eleitores_resultado.append({
-                "nome": eleitor["nome"],
-                "titulo_eleitor": eleitor["titulo_eleitor"],
-                "votou": eleitor["votou"],
-                "situacao": situacao_eleitor
-            })
+        eleitores_resultado = self.eleitores
 
         total_eleitores = len(self.eleitores)
 
