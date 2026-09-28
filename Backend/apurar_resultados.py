@@ -1,7 +1,10 @@
+from banco_de_dados import candidatos, eleitores
+
+
 class ApurarResultado:
     def __init__(self):
-        self.candidatos = []
-        self.eleitores = []
+        self.candidatos = candidatos
+        self.eleitores = eleitores
         self.votos_brancos = 0
         self.votos_nulos = 0
         self.eleicao_aberta = True
@@ -10,15 +13,15 @@ class ApurarResultado:
     def apurarResultado(self):
         if not self.eleicao_aberta:
             return None
-        
+
         total_votos_candidatos = sum(
-            candidato["votos"] 
+            candidato["votos"]
             for candidato in self.candidatos
         )
 
         total_votos = (
-            total_votos_candidatos 
-            + self.votos_brancos 
+            total_votos_candidatos
+            + self.votos_brancos
             + self.votos_nulos
         )
 
@@ -28,7 +31,7 @@ class ApurarResultado:
             ) * 100
         else:
             percentual_nulos = 0
-        
+
         candidatos_resultado = []
 
         for candidato in self.candidatos:
@@ -60,13 +63,13 @@ class ApurarResultado:
 
         else:
             maior_quantidade_votos = max(
-                candidato["votos"] 
+                candidato["votos"]
                 for candidato in self.candidatos
             )
 
             empatados = [
-                candidato 
-                for candidato in self.candidatos 
+                candidato
+                for candidato in self.candidatos
                 if candidato["votos"] == maior_quantidade_votos
             ]
 
@@ -81,15 +84,16 @@ class ApurarResultado:
         eleitores_resultado = []
 
         for eleitor in self.eleitores:
+
             if eleitor["votou"]:
                 situacao_eleitor = "Votou"
-            
             else:
                 situacao_eleitor = "Faltou"
 
             eleitores_resultado.append({
                 "nome": eleitor["nome"],
                 "titulo_eleitor": eleitor["titulo_eleitor"],
+                "votou": eleitor["votou"],
                 "situacao": situacao_eleitor
             })
 
