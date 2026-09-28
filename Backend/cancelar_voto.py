@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QMessageBox
 
 class CancelamentoVoto:
     def __init__(self, eleitor):
-        self.eleitor = eleitor      # dicionário da lista eleitores (banco_de_dados.py)
-        self.digitos = ""           # informações digitadas pelo eleitor na votação
-        self.acesso_liberado = False  # só libera quando o eleitor confirmar o voto
+        self.eleitor = eleitor  # -> dicionário da lista eleitores
+        self.digitos = ""    # -> informações digitadas pelo eleitor na votação
+        self.acesso_liberado = False  # -> só libera quando o eleitor confirmar o voto
 
     def cancelarVoto(self):
         popup = QMessageBox()
@@ -25,7 +25,6 @@ class CancelamentoVoto:
             self.eleitor["votou"] = False
 
             # não volta ao menu, volta ao começo do processo de votação
-            # (a tela de votação ainda não existe no projeto)
 
             return True
 
