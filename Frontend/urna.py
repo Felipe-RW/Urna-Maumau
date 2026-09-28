@@ -6,7 +6,8 @@ from PySide6.QtWidgets import (
     QWidget,
     QFrame,
     QLabel,
-    QPushButton
+    QPushButton,
+    QLineEdit
 )
 
 from PySide6.QtCore import Qt
@@ -62,22 +63,30 @@ class UrnaEletronica(QMainWindow):
         """)
 
         
-        self.numero_1 = QLabel("", self.painel_esquerdo)
+        self.numero_1 = QLineEdit(self.painel_esquerdo)
         self.numero_1.setGeometry(30, 114, 60, 75)
+        self.numero_1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.numero_1.setMaxLength(1)
+        self.numero_1.setFont(QFont("Arial", 35, QFont.Weight.Bold))
         self.numero_1.setStyleSheet("""
-            QLabel {
+            QLineEdit {
                 background-color: white;
+                color: #111111;
                 border: 2px solid #222222;
                 border-radius: 5px;
             }
         """)
 
         
-        self.numero_2 = QLabel("", self.painel_esquerdo)
+        self.numero_2 = QLineEdit(self.painel_esquerdo)
         self.numero_2.setGeometry(98, 114, 60, 75)
+        self.numero_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.numero_2.setMaxLength(1)
+        self.numero_2.setFont(QFont("Arial", 35, QFont.Weight.Bold))
         self.numero_2.setStyleSheet("""
-            QLabel {
+            QLineEdit {
                 background-color: white;
+                color: #111111;
                 border: 2px solid #222222;
                 border-radius: 5px;
             }
