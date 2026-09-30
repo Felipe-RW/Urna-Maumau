@@ -2,6 +2,8 @@ from pathlib import Path
 
 base_dir=Path(__file__).resolve().parent.parent
 
+eleicao_ativa = False
+
 candidatos =[
     #{"nome", numero do candidato, partido, total de votos, caminho da imagem}
     {"nome": "Machado de Assis", "numero_candidato": "10" , "partido": "Partido da Ironia (PI)", "votos": 0, "imagem": base_dir / "Imagens" / "MachadoDeAssis.jpg"},
