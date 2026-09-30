@@ -5,9 +5,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
     QFrame,
-    QLabel,
-    QPushButton,
-    QLineEdit
+    QLabel
 )
 
 from PySide6.QtCore import Qt
@@ -57,7 +55,6 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-
         self.titulo = QLabel(
             "PRESIDENTE",
             self.painel_esquerdo
@@ -90,7 +87,6 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-
         self.numero_1 = QLabel(
             self.painel_esquerdo
         )
@@ -119,7 +115,6 @@ class UrnaEletronica(QMainWindow):
                 border-radius: 5px;
             }
         """)
-
 
         self.numero_2 = QLabel(
             self.painel_esquerdo
@@ -150,7 +145,6 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-
         self.campo_informacao = QLabel(
             "",
             self.painel_esquerdo
@@ -168,7 +162,6 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-
         self.foto_candidato = QFrame(
             self.painel_esquerdo
         )
@@ -184,7 +177,6 @@ class UrnaEletronica(QMainWindow):
                 border-radius: 5px;
             }
         """)
-
 
         self.instrucoes = QLabel(
             "Aperte a tecla:\n"
@@ -239,7 +231,6 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-
         self.teclado = TecladoUrna(
             self.painel_direito
         )
@@ -248,13 +239,16 @@ class UrnaEletronica(QMainWindow):
             2, 2
         )
 
-
         self.teclado.acaoNumero = (
             self.receber_numero
         )
 
         self.teclado.acaoCorrigir = (
             self.corrigir_numero
+        )
+
+        self.teclado.acaoConfirmar = (
+            self.submeterVoto
         )
 
 
@@ -277,12 +271,24 @@ class UrnaEletronica(QMainWindow):
         self.numero_2.setText("")
 
 
+    def submeterVoto(self):
+
+        numero = (
+            self.numero_1.text()
+            + self.numero_2.text()
+        )
+
+        print(
+            "Voto submetido:",
+            numero
+        )
+
+
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
     janela = UrnaEletronica()
-
     janela.show()
 
     sys.exit(app.exec())
