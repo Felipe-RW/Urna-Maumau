@@ -90,6 +90,8 @@ class AbrirPopUp(QMainWindow):
             
             try:  
                 self.close()
+                # menu_votacao = MenuVotacao()
+                # menu_votacao.abrirJanela
             
 
                 
@@ -102,8 +104,8 @@ class AbrirPopUp(QMainWindow):
             self.close()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    janela = AbrirPopUp()
-    janela.show()
-    sys.exit(app.exec())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     janela = AbrirPopUp()
+#     janela.show()
+#     sys.exit(app.exec())

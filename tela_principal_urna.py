@@ -157,13 +157,11 @@ class TelaPrincipalUrna(QMainWindow):
         
 
         if resultado == QDialog.Accepted:
-            
-
             titulo_validado = popup.transformar_str()
             print(f"Título Aprovado: {titulo_validado}. Abrindo votação...")
             # Aqui você abre a tela da votação em si (ex: UrnaVotacao)
             self.close()
-            abrir_votacao.show()
+
 
 
 
