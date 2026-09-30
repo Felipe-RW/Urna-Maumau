@@ -1,12 +1,14 @@
 import sys
 import os
-
+from pathlib import Path
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
     QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy
 )
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+
+base_dir=Path(__file__).resolve().parent
 
 
 class TelaPrincipalUrna(QMainWindow):  
@@ -57,7 +59,7 @@ class TelaPrincipalUrna(QMainWindow):
 
         # IMAGEM NO TOPO
         self.lbl_logo = QLabel()
-        caminho_imagem = os.path.join("Imagens", "LogoJusticaEleitoral.jpg")
+        caminho_imagem = os.path.join(base_dir, "Imagens", "LogoJusticaEleitoral.jpg")
         
         if os.path.exists(caminho_imagem):
             pixmap = QPixmap(caminho_imagem)
