@@ -1,4 +1,5 @@
 class ApurarResultado:
+    # aqui esta recebendo os dados da eleicao
     def __init__(
         self,
         candidatos,
@@ -14,21 +15,27 @@ class ApurarResultado:
         self.eleicao_aberta = eleicao_aberta
 
 
+    # aqui faz a apuracao dos resultados
     def apurarResultado(self):
+
+        # aqui verifica se a eleicao esta aberta
         if not self.eleicao_aberta:
             return None
 
+        # aqui soma os votos dos candidatos
         total_votos_candidatos = sum(
             candidato["votos"]
             for candidato in self.candidatos
         )
 
+        # aqui soma todos os votos
         total_votos = (
             total_votos_candidatos
             + self.votos_brancos
             + self.votos_nulos
         )
 
+        # aqui calcula a porcentagem de votos nulos
         if total_votos > 0:
             percentual_nulos = (
                 self.votos_nulos / total_votos
@@ -36,109 +43,55 @@ class ApurarResultado:
         else:
             percentual_nulos = 0
 
-        candidatos_resultado = []
-
-        for candidato in self.candidatos:
-
-            if total_votos_candidatos > 0:
-                percentual = (
-                    candidato["votos"]
-                    / total_votos_candidatos
-                ) * 100
-            else:
-                percentual = 0
-
-            candidatos_resultado.append({
-                "nome": candidato["nome"],
-                "numero_candidato": candidato["numero_candidato"],
-                "votos": candidato["votos"],
-                "percentual": percentual
-            })
-
+        # aqui verifica se a eleicao foi anulada
         if percentual_nulos > 50:
             situacao = "Eleição anulada"
             vencedor = None
             empatados = []
 
+        # aqui verifica se não teve votos válidos
         elif total_votos_candidatos == 0:
             situacao = "Sem votos válidos"
             vencedor = None
             empatados = []
 
         else:
+            # aqui encontra a maior quantidade de votos
             maior_quantidade_votos = max(
                 candidato["votos"]
                 for candidato in self.candidatos
             )
 
+            # aqui encontra os candidatos com mais votos
             empatados = [
                 candidato
                 for candidato in self.candidatos
                 if candidato["votos"] == maior_quantidade_votos
             ]
 
+            # aqui verifica se houve empate
             if len(empatados) > 1:
                 situacao = "Empate"
                 vencedor = None
 
+            # aqui define o vencedor
             else:
                 situacao = "Eleição finalizada"
                 vencedor = empatados[0]
 
-        eleitores_resultado = self.eleitores
-
-        total_eleitores = len(self.eleitores)
-
-        eleitores_que_votaram = sum(
-            1
-            for eleitor in self.eleitores
-            if eleitor["votou"]
-        )
-
-        abstencoes = (
-            total_eleitores
-            - eleitores_que_votaram
-        )
-
-        if total_eleitores > 0:
-
-            percentual_comparecimento = (
-                eleitores_que_votaram
-                / total_eleitores
-            ) * 100
-
-            percentual_abstencoes = (
-                abstencoes
-                / total_eleitores
-            ) * 100
-
-        else:
-            percentual_comparecimento = 0
-            percentual_abstencoes = 0
-
+        # aqui guarda o resultado final
         resultado = {
-            "candidatos": candidatos_resultado,
-            "eleitores": eleitores_resultado,
-
-            "total_votos": total_votos,
-            "votos_validos": total_votos_candidatos,
+            "candidatos": self.candidatos,
+            "eleitores": self.eleitores,
             "votos_brancos": self.votos_brancos,
             "votos_nulos": self.votos_nulos,
-
-            "percentual_nulos": percentual_nulos,
-
-            "total_eleitores": total_eleitores,
-            "eleitores_que_votaram": eleitores_que_votaram,
-            "abstencoes": abstencoes,
-
-            "percentual_comparecimento": percentual_comparecimento,
-            "percentual_abstencoes": percentual_abstencoes,
-
             "situacao": situacao,
             "vencedor": vencedor,
             "empatados": empatados
         }
 
+        # aqui encerra a eleição
         self.eleicao_aberta = False
 
+        # retorna o resultado
         return resultado
