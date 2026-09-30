@@ -8,6 +8,8 @@ Fluxo:
     2. gerar_zeresima()  -> monta os dados do relatório (levanta erro se inválida)
     3. formatar_texto()  -> gera o texto no mesmo estilo do Relatório Final
     4. salvar_zeresima() -> grava o .txt (com hash SHA-256 de integridade)
+
+A flag da eleição fica no banco_de_dados.py (eleicao_ativa = False).
 """
 
 import hashlib
@@ -30,16 +32,22 @@ class EleicaoJaIniciada(Exception):
     """A eleição já começou (zerésima emitida ou votos computados)."""
 
 
+def _banco():
+    """Devolve o módulo banco_de_dados (sempre o mesmo objeto)."""
+    try:
+        from Backend import banco_de_dados as bd
+    except ModuleNotFoundError:
+        import banco_de_dados as bd
+    return bd
+
+
 def carregar_do_banco():
     """Devolve (candidatos, eleitores) do banco_de_dados.py.
 
     Candidato: {"nome", "numero_candidato", "partido", "votos", "imagem"}
     Eleitor:   {"nome", "titulo_eleitor", "votou"}
     """
-    try:  
-        from Backend import banco_de_dados as bd
-    except ModuleNotFoundError:  
-        import banco_de_dados as bd
+    bd = _banco()
     return bd.candidatos, bd.eleitores
 
 
@@ -138,8 +146,6 @@ def salvar_zeresima(zeresima, pasta="relatorios"):
     return caminho
 
 
-_eleicao_iniciada = False
-
 MSG_JA_EMITIDA = (
     "A zerésima já foi emitida e a eleição está ativa.\n"
     "Não é possível emitir outra zerésima sem reiniciar o sistema."
@@ -151,24 +157,24 @@ MSG_COM_VOTOS = (
 
 
 def eleicao_iniciada():
-    """True depois que a zerésima foi emitida. A tela de votação pode usar
-    isto para só liberar o voto quando a eleição estiver iniciada."""
-    return _eleicao_iniciada
+    """Lê a flag bd.eleicao_ativa. A tela de votação pode usar isto para só
+    liberar o voto quando a eleição estiver ativa."""
+    return _banco().eleicao_ativa
 
 
 def emitir_zeresima(candidatos, eleitores):
     """Avalia a situação atual da urna.
 
-    - Urna zerada e eleição ainda não iniciada: marca a eleição como iniciada
-      e devolve um dicionário com os dados da zerésima (incluindo data e hora
+    - Urna zerada e eleição ainda não ativa: liga bd.eleicao_ativa = True e
+      devolve um dicionário com os dados da zerésima (incluindo data e hora
       atuais do computador), pronto para a tela de relatório.
     - Eleição já ativa ou algum voto computado: levanta EleicaoJaIniciada.
     - Urna mal configurada (sem candidatos, números repetidos):
       levanta ZeresimaInvalida.
     """
-    global _eleicao_iniciada
+    bd = _banco()
 
-    if _eleicao_iniciada:
+    if bd.eleicao_ativa:
         raise EleicaoJaIniciada(MSG_JA_EMITIDA)
 
     ha_votos = any(c["votos"] != 0 for c in candidatos) or any(
@@ -177,12 +183,12 @@ def emitir_zeresima(candidatos, eleitores):
     if ha_votos:
         raise EleicaoJaIniciada(MSG_COM_VOTOS)
 
-    zeresima = gerar_zeresima(candidatos, eleitores)  
+    zeresima = gerar_zeresima(candidatos, eleitores)
     zeresima["data"] = f"{zeresima['emitido_em']:%d/%m/%Y}"
     zeresima["hora"] = f"{zeresima['emitido_em']:%H:%M:%S}"
     zeresima["eleitores"] = eleitores
 
-    _eleicao_iniciada = True  
+    bd.eleicao_ativa = True  # só liga depois de tudo dar certo
     return zeresima
 
 
@@ -193,7 +199,7 @@ def solicitar_zeresima(parent, candidatos, eleitores):
     - Eleição já ativa / votos computados / urna inválida: mostra um popup de
       erro com a mensagem relevante e devolve None.
     """
-    from PySide6.QtWidgets import QMessageBox  
+    from PySide6.QtWidgets import QMessageBox
 
     try:
         return emitir_zeresima(candidatos, eleitores)
@@ -209,7 +215,7 @@ def solicitar_zeresima(parent, candidatos, eleitores):
 
 if __name__ == "__main__":
     candidatos, eleitores = carregar_do_banco()
-
+    
     for tentativa in (1, 2):
         try:
             zeresima = emitir_zeresima(candidatos, eleitores)
