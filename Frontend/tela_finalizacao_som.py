@@ -112,10 +112,10 @@ class TelaFinalizacao(QMainWindow):
     self.close()
 
 
-# Caso esteja tudo de acordo, o arquivo será executado pela "tela_principal_urna"
-if __name__ == "__main__":
-  app = QApplication(sys.argv)
-  tela = TelaFinalizacao()
-  tela.show()
-  sys.exit(app.exec())
+# # Caso esteja tudo de acordo, o arquivo será executado pela "tela_principal_urna"
+# if __name__ == "__main__":
+#   app = QApplication(sys.argv)
+#   tela = TelaFinalizacao()
+#   tela.show()
+#   sys.exit(app.exec())
 
