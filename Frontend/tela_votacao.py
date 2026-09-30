@@ -11,7 +11,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
-from painel_numerico import TecladoUrna
+from Frontend.painel_numerico import TecladoUrna
+from Backend.confirmar_voto import ConfirmarVotos
+from Backend.banco_de_dados import candidatos, eleitores
 
 
 class UrnaEletronica(QMainWindow):
@@ -19,11 +21,24 @@ class UrnaEletronica(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Urna Eletrônica - PySide6")
-        self.setFixedSize(1280, 720)
+        self.confirmarVotos = ConfirmarVotos(
+            candidatos,
+            eleitores
+        )
+
+        self.setWindowTitle(
+            "Urna Eletrônica - PySide6"
+        )
+
+        self.setFixedSize(
+            1280,
+            720
+        )
 
         self.tela = QWidget()
-        self.tela.setObjectName("telaPrincipal")
+        self.tela.setObjectName(
+            "telaPrincipal"
+        )
 
         self.tela.setStyleSheet("""
             QWidget#telaPrincipal {
@@ -31,7 +46,9 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-        self.setCentralWidget(self.tela)
+        self.setCentralWidget(
+            self.tela
+        )
 
         self.criar_painel_esquerdo()
         self.criar_painel_direito()
@@ -190,7 +207,10 @@ class UrnaEletronica(QMainWindow):
         )
 
         self.instrucoes.setFont(
-            QFont("Arial", 14)
+            QFont(
+                "Arial",
+                14
+            )
         )
 
         self.instrucoes.setAlignment(
@@ -236,7 +256,8 @@ class UrnaEletronica(QMainWindow):
         )
 
         self.teclado.move(
-            2, 2
+            2,
+            2
         )
 
         self.teclado.acaoNumero = (
@@ -278,10 +299,16 @@ class UrnaEletronica(QMainWindow):
             + self.numero_2.text()
         )
 
-        print(
-            "Voto submetido:",
+        if len(numero) != 2:
+            return
+
+        self.confirmarVotos.submeterVotos(
+            None,
             numero
         )
+
+        self.numero_1.setText("")
+        self.numero_2.setText("")
 
 
 if __name__ == "__main__":

@@ -15,14 +15,9 @@ class ConfirmarVotos(QObject):
         self.popup = PopUpAviso()
 
     def submeterVotos(self, titulo_eleitor, numero_candidato):
+        self.contabilizar_votos.contabilizarVoto(numero_candidato)
 
-        if self.validar_eleitor.validarEleitor(titulo_eleitor) == False:
-            for eleitor in self.lista_eleitores:
-                if eleitor["titulo_eleitor"] == titulo_eleitor:
-                    eleitor["votou"] = True
-                    self.contabilizar_votos.contabilizarVoto(numero_candidato)
-                    #PopUp de fim e depois voltar para tela principal urna
-                    break
+                  
 
        
 
