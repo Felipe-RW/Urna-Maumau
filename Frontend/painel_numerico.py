@@ -10,15 +10,23 @@ from PySide6.QtWidgets import (
 
 
 class TecladoUrna(QWidget):
-    def __init__(self):
-        super().__init__()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.setWindowTitle("Teclado Urna")
         self.setFixedSize(400, 700)
 
+        self.setAttribute(
+            Qt.WidgetAttribute.WA_StyledBackground,
+            True
+        )
+
         self.setStyleSheet("""
-            background-color: #2b2b2b;
-            border-radius: 8px;
+            TecladoUrna {
+                background-color: #2b2b2b;
+                border-radius: 8px;
+            }
         """)
 
         self.criarTeclado()
@@ -30,12 +38,15 @@ class TecladoUrna(QWidget):
             "Justiça Eleitoral",
             self
         )
+
         self.label_justica_eleitoral.setGeometry(
             25, 20, 350, 130
         )
+
         self.label_justica_eleitoral.setAlignment(
             Qt.AlignCenter
         )
+
         self.label_justica_eleitoral.setStyleSheet("""
             background-color: #252525;
             border-radius: 5px;
@@ -71,9 +82,11 @@ class TecladoUrna(QWidget):
                 numero,
                 self
             )
+
             btn_numero.setGeometry(
                 x, y, 80, 60
             )
+
             btn_numero.setStyleSheet("""
                 QPushButton {
                     background-color: #1f1f1f;
@@ -93,6 +106,11 @@ class TecladoUrna(QWidget):
                 }
             """)
 
+            btn_numero.clicked.connect(
+                lambda checked=False, n=numero:
+                self.numeroClicado(n)
+            )
+
             self.botoes_numericos.append(
                 btn_numero
             )
@@ -102,9 +120,11 @@ class TecladoUrna(QWidget):
             "BRANCO",
             self
         )
+
         self.btn_branco.setGeometry(
             25, 550, 105, 60
         )
+
         self.btn_branco.setStyleSheet("""
             QPushButton {
                 background-color: white;
@@ -129,9 +149,11 @@ class TecladoUrna(QWidget):
             "CORRIGE",
             self
         )
+
         self.btn_corrige.setGeometry(
             147, 550, 105, 60
         )
+
         self.btn_corrige.setStyleSheet("""
             QPushButton {
                 background-color: #ff7f27;
@@ -151,14 +173,20 @@ class TecladoUrna(QWidget):
             }
         """)
 
+        self.btn_corrige.clicked.connect(
+            self.corrigir
+        )
+
 
         self.btn_confirma = QPushButton(
             "CONFIRMA",
             self
         )
+
         self.btn_confirma.setGeometry(
             270, 550, 105, 60
         )
+
         self.btn_confirma.setStyleSheet("""
             QPushButton {
                 background-color: #32cd32;
@@ -177,6 +205,18 @@ class TecladoUrna(QWidget):
                 background-color: #28a428;
             }
         """)
+
+
+    def numeroClicado(self, numero):
+
+        if hasattr(self, "acaoNumero"):
+            self.acaoNumero(numero)
+
+
+    def corrigir(self):
+
+        if hasattr(self, "acaoCorrigir"):
+            self.acaoCorrigir()
 
 
 if __name__ == "__main__":
