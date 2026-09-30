@@ -4,7 +4,6 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
-    QHBoxLayout,
     QLabel,
     QMainWindow,
     QPushButton,
@@ -32,38 +31,10 @@ class TelaFinalizacao(QMainWindow):
     c_widget = QWidget()
     self.setCentralWidget(c_widget)
 
-    top_level_layout = QVBoxLayout()
-    top_level_layout.setContentsMargins(0, 0, 0, 20)
-    c_widget.setLayout(top_level_layout)
-
-    # Cabeçalho
-    topo_layout = QHBoxLayout()
-    topo_layout.setContentsMargins(20, 10, 20, 0)
-    topo_layout.setAlignment(
-        Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
-    )
-
-    self.btn_sair = QPushButton("Sair")
-    self.btn_sair.setFixedSize(100, 35)
-    self.btn_sair.setStyleSheet("""
-            QPushButton {
-                font-size: 12px;
-                font-weight: bold;
-                font-family: 'Verdana';
-                background-color: #d32f2f;
-                color: white;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #b71c1c;
-            }
-        """)
-    self.btn_sair.clicked.connect(self.close)
-
-    topo_layout.addWidget(self.btn_sair)
-    top_level_layout.addLayout(topo_layout)
-
-    top_level_layout.addStretch()
+    # Layout principal centralizado
+    top_level_layout = QVBoxLayout(c_widget)
+    top_level_layout.setContentsMargins(0, 0, 0, 0)
+    top_level_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     # Conteúdo do meio
     main_layout = QVBoxLayout()
@@ -110,7 +81,6 @@ class TelaFinalizacao(QMainWindow):
     )
 
     top_level_layout.addLayout(main_layout)
-    top_level_layout.addStretch()
 
   def voltarAoMenu(self):
     self.tela_principal = TelaPrincipalUrna()
