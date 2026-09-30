@@ -1,24 +1,19 @@
 """Backend da Zerésima da Urna Eletrônica.
 
 A zerésima é emitida ANTES da votação para comprovar que a urna está vazia:
-nenhum candidato com votos e nenhum eleitor marcado como "votou".
-
-Fluxo:
-    1. validar_urna()    -> confere se a urna realmente está zerada
-    2. gerar_zeresima()  -> monta os dados do relatório (levanta erro se inválida)
-    3. formatar_texto()  -> gera o texto no mesmo estilo do Relatório Final
-    4. salvar_zeresima() -> grava o .txt (com hash SHA-256 de integridade)
-
-A flag da eleição fica no banco_de_dados.py (eleicao_ativa = False).
+nenhum candidato com votos, nenhum eleitor marcado como "votou" e nenhum voto registrado.
 """
 
 import hashlib
 from datetime import datetime
 from pathlib import Path
 
-LARGURA = 60
-LINHA = "-" * LARGURA
+largura = 60
+linha_separadora = "-" * largura
 
+# Variáveis dedicadas para armazenar os votos brancos e nulos
+votos_brancos = 0
+votos_nulos = 0
 
 class ZeresimaInvalida(Exception):
     """A urna não está zerada, então a zerésima não pode ser emitida."""
@@ -42,18 +37,14 @@ def _banco():
 
 
 def carregar_do_banco():
-    """Devolve (candidatos, eleitores) do banco_de_dados.py.
-
-    Candidato: {"nome", "numero_candidato", "partido", "votos", "imagem"}
-    Eleitor:   {"nome", "titulo_eleitor", "votou"}
-    """
+    """Devolve (candidatos, eleitores) do banco_de_dados.py."""
     bd = _banco()
     return bd.candidatos, bd.eleitores
 
 
-
 def validar_urna(candidatos, eleitores):
     """Devolve uma lista de erros. Lista vazia = urna zerada e válida."""
+    bd = _banco()
     erros = []
 
     if not candidatos:
@@ -71,46 +62,64 @@ def validar_urna(candidatos, eleitores):
         if e["votou"]:
             erros.append(f"Eleitor '{e['nome']}' já consta como tendo votado.")
 
+    if len(bd.votos_registrados) > 0:
+        erros.append("Existem votos registrados na lista 'votos_registrados'.")
+
     return erros
 
 
 def gerar_zeresima(candidatos, eleitores, momento=None):
-    """Valida a urna e devolve os dados da zerésima.
-
-    Levanta ZeresimaInvalida se houver qualquer voto registrado.
-    """
+    """Valida a urna e devolve os dados da zerésima."""
     erros = validar_urna(candidatos, eleitores)
     if erros:
         raise ZeresimaInvalida(erros)
 
+    lista_opcoes = [
+        {
+            "nome": str(c["nome"]),
+            "numero_candidato": str(c["numero_candidato"]),
+            "votos": 0,
+        }
+        for c in sorted(candidatos, key=lambda x: int(x["numero_candidato"]))
+    ]
+
+    lista_opcoes.extend([
+        {
+            "nome": "Branco",
+            "numero_candidato": "BRANCO",
+            "votos": 0,
+        }, 
+        {
+            "nome": "Nulo",
+            "numero_candidato": "NULO",
+            "votos": 0,
+        }
+    ])
+
+
     return {
         "emitido_em": momento or datetime.now(),
-        "candidatos": [
-            {
-                "nome": str(c["nome"]),
-                "numero_candidato": c["numero_candidato"],
-                "votos": 0,
-            }
-            for c in sorted(candidatos, key=lambda c: int(c["numero_candidato"]))
-        ],
+        "candidatos": lista_opcoes,
         "total_eleitores": len(eleitores),
         "total_votos": 0,
+        "votos_brancos": votos_brancos,
+        "votos_nulos": votos_nulos,
     }
 
 
 def _centralizar(texto):
-    return texto.center(LARGURA)
+    return texto.center(largura)
 
 
 def formatar_texto(zeresima):
-    """Monta o texto da zerésima (mesmo visual do Relatório Final)."""
+    """Monta o texto da zerésima."""
     agora = zeresima["emitido_em"]
     linhas = [
         _centralizar("ZERÉSIMA"),
         _centralizar(f"Data: {agora:%d/%m/%Y}   Hora: {agora:%H:%M:%S}"),
-        LINHA,
+        linha_separadora,
         _centralizar("PRESIDENTE"),
-        LINHA,
+        linha_separadora,
         f"{'Nome do candidato':<34}{'Núm.':^8}{'votos':>18}",
     ]
 
@@ -120,12 +129,12 @@ def formatar_texto(zeresima):
         )
 
     linhas += [
-        LINHA,
+        linha_separadora,
         f"Eleitores aptos: {zeresima['total_eleitores']}",
         f"Total de votos apurados: {zeresima['total_votos']}",
-        LINHA,
+        linha_separadora,
         _centralizar("URNA ZERADA - NENHUM VOTO REGISTRADO"),
-        LINHA,
+        linha_separadora,
     ]
     return "\n".join(linhas)
 
@@ -134,71 +143,60 @@ def calcular_hash(texto):
     return hashlib.sha256(texto.encode("utf-8")).hexdigest()
 
 
-def salvar_zeresima(zeresima, pasta="relatorios"):
-    """Grava a zerésima em .txt, com o hash SHA-256 no final. Devolve o Path."""
-    texto = formatar_texto(zeresima)
-    hash_sha = calcular_hash(texto)
+def salvar_zeresima(zeresima, pasta_destino="relatorios"):
+    """Grava a zerésima em .txt, com o hash SHA-256 no final."""
+    texto_zeresima = formatar_texto(zeresima)
+    hash_sha = calcular_hash(texto_zeresima)
 
-    pasta = Path(pasta)
+    pasta = Path(pasta_destino)
     pasta.mkdir(parents=True, exist_ok=True)
-    caminho = pasta / f"zeresima_{zeresima['emitido_em']:%Y%m%d_%H%M%S}.txt"
-    caminho.write_text(f"{texto}\nSHA-256: {hash_sha}\n", encoding="utf-8")
-    return caminho
+    caminho_arquivo = pasta / f"zeresima_{zeresima['emitido_em']:%Y%m%d_%H%M%S}.txt"
+    caminho_arquivo.write_text(f"{texto_zeresima}\nSHA-256: {hash_sha}\n", encoding="utf-8")
+    return caminho_arquivo
 
 
-MSG_JA_EMITIDA = (
+msg_ja_emitida = (
     "A zerésima já foi emitida e a eleição está ativa.\n"
     "Não é possível emitir outra zerésima sem reiniciar o sistema."
 )
-MSG_COM_VOTOS = (
+msg_com_votos = (
     "Já existem votos computados nesta urna.\n"
     "Não é possível emitir a zerésima sem reiniciar o sistema."
 )
 
 
 def eleicao_iniciada():
-    """Lê a flag bd.eleicao_ativa. A tela de votação pode usar isto para só
-    liberar o voto quando a eleição estiver ativa."""
+    """Lê a flag bd.eleicao_ativa."""
     return _banco().eleicao_ativa
 
 
 def emitir_zeresima(candidatos, eleitores):
-    """Avalia a situação atual da urna.
-
-    - Urna zerada e eleição ainda não ativa: liga bd.eleicao_ativa = True e
-      devolve um dicionário com os dados da zerésima (incluindo data e hora
-      atuais do computador), pronto para a tela de relatório.
-    - Eleição já ativa ou algum voto computado: levanta EleicaoJaIniciada.
-    - Urna mal configurada (sem candidatos, números repetidos):
-      levanta ZeresimaInvalida.
-    """
+    """Avalia a situação atual da urna e emite a zerésima."""
     bd = _banco()
 
     if bd.eleicao_ativa:
-        raise EleicaoJaIniciada(MSG_JA_EMITIDA)
+        raise EleicaoJaIniciada(msg_ja_emitida)
 
-    ha_votos = any(c["votos"] != 0 for c in candidatos) or any(
-        e["votou"] for e in eleitores
+    ha_votos = (
+        any(c["votos"] != 0 for c in candidatos) 
+        or any(e["votou"] for e in eleitores) 
+        or len(bd.votos_registrados) > 0
     )
+    
     if ha_votos:
-        raise EleicaoJaIniciada(MSG_COM_VOTOS)
+        raise EleicaoJaIniciada(msg_com_votos)
 
     zeresima = gerar_zeresima(candidatos, eleitores)
     zeresima["data"] = f"{zeresima['emitido_em']:%d/%m/%Y}"
     zeresima["hora"] = f"{zeresima['emitido_em']:%H:%M:%S}"
     zeresima["eleitores"] = eleitores
 
-    bd.eleicao_ativa = True  # só liga depois de tudo dar certo
+    bd.eleicao_ativa = True
     return zeresima
 
 
 def solicitar_zeresima(parent, candidatos, eleitores):
-    """Versão para a interface: tenta emitir a zerésima.
-
-    - Sucesso: devolve o dicionário com os dados da zerésima.
-    - Eleição já ativa / votos computados / urna inválida: mostra um popup de
-      erro com a mensagem relevante e devolve None.
-    """
+    """Versão para a interface gráfica."""
     from PySide6.QtWidgets import QMessageBox
 
     try:
