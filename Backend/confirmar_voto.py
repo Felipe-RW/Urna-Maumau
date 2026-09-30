@@ -9,7 +9,7 @@ class ConfirmarVotos():
         self.lista_candidatos = candidatos
         self.lista_eleitores = eleitores
         self.validar_eleitor= ValidarEleitor(eleitores)
-        self.contabilizar_votos= SistemaUrna(candidatos, eleitores)
+        self.contabilizar_votos = SistemaUrna()
         self.popup = PopUpAviso()
 
     def submeterVotos(self, numero_candidato):

@@ -154,6 +154,10 @@ class TecladoUrna(QWidget):
             147, 550, 105, 60
         )
 
+        self.btn_branco.clicked.connect(
+            self.branco
+        )
+
         self.btn_corrige.setStyleSheet("""
             QPushButton {
                 background-color: #ff7f27;
@@ -206,6 +210,10 @@ class TecladoUrna(QWidget):
             }
         """)
 
+        self.btn_confirma.clicked.connect(
+            self.confirmar
+        )
+
 
     def numeroClicado(self, numero):
 
@@ -217,6 +225,17 @@ class TecladoUrna(QWidget):
 
         if hasattr(self, "acaoCorrigir"):
             self.acaoCorrigir()
+
+
+    def confirmar(self):
+
+        if hasattr(self, "acaoConfirmar"):
+            self.acaoConfirmar()
+
+    def branco(self):
+
+        if hasattr(self, "acaoBranco"):
+            self.acaoBranco()
 
 
 if __name__ == "__main__":

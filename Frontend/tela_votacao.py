@@ -1,19 +1,34 @@
 import sys
+import os
 
+pasta_projeto = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+pasta_backend = os.path.join(
+    pasta_projeto,
+    "Backend"
+)
+
+sys.path.append(pasta_projeto)
+sys.path.append(pasta_backend)
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QWidget,
     QFrame,
-    QLabel,
-    QPushButton,
-    QLineEdit
+    QLabel
 )
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
 from painel_numerico import TecladoUrna
+
+from banco_de_dados import candidatos
+from confirmar_voto import ConfirmarVotos
 
 
 class UrnaEletronica(QMainWindow):
@@ -163,8 +178,10 @@ class UrnaEletronica(QMainWindow):
         self.campo_informacao.setStyleSheet("""
             QLabel {
                 background-color: #eeeeee;
+                color: black;
                 border: 2px solid #b8b8b8;
                 border-radius: 5px;
+                padding-left: 10px;
             }
         """)
 
@@ -257,6 +274,14 @@ class UrnaEletronica(QMainWindow):
             self.corrigir_numero
         )
 
+        self.teclado.acaoConfirmar = (
+            self.confirmar_voto
+        )
+
+        self.teclado.acaoBranco = (
+            self.voto_branco
+        )
+
 
     def receber_numero(self, numero):
 
@@ -275,6 +300,75 @@ class UrnaEletronica(QMainWindow):
 
         self.numero_1.setText("")
         self.numero_2.setText("")
+        self.campo_informacao.setText("")
+
+
+    def confirmar_voto(self):
+
+        numero_candidato = (
+            self.numero_1.text()
+            + self.numero_2.text()
+        )
+
+        if len(numero_candidato) != 2:
+            self.campo_informacao.setText(
+                "Digite o número completo do candidato."
+            )
+            return
+
+
+        candidato_encontrado = None
+
+        for candidato in candidatos:
+
+            if candidato["numero_candidato"] == numero_candidato:
+                candidato_encontrado = candidato
+                break
+
+
+        if candidato_encontrado is None:
+
+            self.campo_informacao.setText(
+                "Candidato não encontrado."
+            )
+
+            return
+
+
+        confirmar_votos = ConfirmarVotos()
+        confirmar_votos.submeterVotos(
+            numero_candidato
+        )
+
+
+        self.campo_informacao.setText(
+            "Voto confirmado para "
+            + candidato_encontrado["nome"]
+        )
+
+
+        print(
+            candidato_encontrado["nome"],
+            "- votos:",
+            candidato_encontrado["votos"]
+        )
+
+    def voto_branco(self):
+
+        confirmar_votos = ConfirmarVotos()
+
+        confirmar_votos.submeterVotos(
+            "BRANCO"
+        )
+
+        self.numero_1.setText("")
+        self.numero_2.setText("")
+
+        self.campo_informacao.setText(
+            "VOTO EM BRANCO"
+        )
+
+        print("Voto em branco confirmado")
 
 
 if __name__ == "__main__":
