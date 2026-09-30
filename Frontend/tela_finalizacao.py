@@ -3,8 +3,8 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
 from PySide6.QtCore import Qt
 
-root_dir = Path(__file__).resolve()
-sys.path.append(str(root_dir))
+root_dir = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(root_dir))
 
 from tela_principal_urna import TelaPrincipalUrna
 
