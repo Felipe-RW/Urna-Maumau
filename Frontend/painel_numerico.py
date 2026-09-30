@@ -56,6 +56,7 @@ class TecladoUrna(QWidget):
             font-weight: bold;
         """)
 
+
         self.botoes_numericos = []
 
         numeros = [
@@ -73,6 +74,7 @@ class TecladoUrna(QWidget):
 
             ("0", 160, 420)
         ]
+
 
         for numero, x, y in numeros:
 
@@ -113,6 +115,7 @@ class TecladoUrna(QWidget):
                 btn_numero
             )
 
+
         self.btn_branco = QPushButton(
             "BRANCO",
             self
@@ -140,6 +143,7 @@ class TecladoUrna(QWidget):
                 background-color: #cccccc;
             }
         """)
+
 
         self.btn_corrige = QPushButton(
             "CORRIGE",
@@ -173,6 +177,7 @@ class TecladoUrna(QWidget):
             self.corrigir
         )
 
+
         self.btn_confirma = QPushButton(
             "CONFIRMA",
             self
@@ -201,10 +206,6 @@ class TecladoUrna(QWidget):
             }
         """)
 
-        self.btn_confirma.clicked.connect(
-            self.confirmar
-        )
-
 
     def numeroClicado(self, numero):
 
@@ -216,12 +217,6 @@ class TecladoUrna(QWidget):
 
         if hasattr(self, "acaoCorrigir"):
             self.acaoCorrigir()
-
-
-    def confirmar(self):
-
-        if hasattr(self, "acaoConfirmar"):
-            self.acaoConfirmar()
 
 
 if __name__ == "__main__":

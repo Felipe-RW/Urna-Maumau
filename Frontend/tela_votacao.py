@@ -5,15 +5,15 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
     QFrame,
-    QLabel
+    QLabel,
+    QPushButton,
+    QLineEdit
 )
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
-from Frontend.painel_numerico import TecladoUrna
-from Backend.confirmar_voto import ConfirmarVotos
-from Backend.banco_de_dados import candidatos, eleitores
+from painel_numerico import TecladoUrna
 
 
 class UrnaEletronica(QMainWindow):
@@ -21,24 +21,11 @@ class UrnaEletronica(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.confirmarVotos = ConfirmarVotos(
-            candidatos,
-            eleitores
-        )
-
-        self.setWindowTitle(
-            "Urna Eletrônica - PySide6"
-        )
-
-        self.setFixedSize(
-            1280,
-            720
-        )
+        self.setWindowTitle("Urna Eletrônica - PySide6")
+        self.setFixedSize(1280, 720)
 
         self.tela = QWidget()
-        self.tela.setObjectName(
-            "telaPrincipal"
-        )
+        self.tela.setObjectName("telaPrincipal")
 
         self.tela.setStyleSheet("""
             QWidget#telaPrincipal {
@@ -46,9 +33,7 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
-        self.setCentralWidget(
-            self.tela
-        )
+        self.setCentralWidget(self.tela)
 
         self.criar_painel_esquerdo()
         self.criar_painel_direito()
@@ -71,6 +56,7 @@ class UrnaEletronica(QMainWindow):
                 border-radius: 6px;
             }
         """)
+
 
         self.titulo = QLabel(
             "PRESIDENTE",
@@ -104,6 +90,7 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
+
         self.numero_1 = QLabel(
             self.painel_esquerdo
         )
@@ -132,6 +119,7 @@ class UrnaEletronica(QMainWindow):
                 border-radius: 5px;
             }
         """)
+
 
         self.numero_2 = QLabel(
             self.painel_esquerdo
@@ -162,6 +150,7 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
+
         self.campo_informacao = QLabel(
             "",
             self.painel_esquerdo
@@ -179,6 +168,7 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
+
         self.foto_candidato = QFrame(
             self.painel_esquerdo
         )
@@ -195,6 +185,7 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
+
         self.instrucoes = QLabel(
             "Aperte a tecla:\n"
             "VERDE para CONFIRMAR\n"
@@ -207,10 +198,7 @@ class UrnaEletronica(QMainWindow):
         )
 
         self.instrucoes.setFont(
-            QFont(
-                "Arial",
-                14
-            )
+            QFont("Arial", 14)
         )
 
         self.instrucoes.setAlignment(
@@ -251,14 +239,15 @@ class UrnaEletronica(QMainWindow):
             }
         """)
 
+
         self.teclado = TecladoUrna(
             self.painel_direito
         )
 
         self.teclado.move(
-            2,
-            2
+            2, 2
         )
+
 
         self.teclado.acaoNumero = (
             self.receber_numero
@@ -266,10 +255,6 @@ class UrnaEletronica(QMainWindow):
 
         self.teclado.acaoCorrigir = (
             self.corrigir_numero
-        )
-
-        self.teclado.acaoConfirmar = (
-            self.submeterVoto
         )
 
 
@@ -292,30 +277,12 @@ class UrnaEletronica(QMainWindow):
         self.numero_2.setText("")
 
 
-    def submeterVoto(self):
-
-        numero = (
-            self.numero_1.text()
-            + self.numero_2.text()
-        )
-
-        if len(numero) != 2:
-            return
-
-        self.confirmarVotos.submeterVotos(
-            None,
-            numero
-        )
-
-        self.numero_1.setText("")
-        self.numero_2.setText("")
-
-
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
     janela = UrnaEletronica()
+
     janela.show()
 
     sys.exit(app.exec())
