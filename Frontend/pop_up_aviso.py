@@ -4,25 +4,26 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 class PopUpAviso(QMessageBox):
 
-    def popupConfirmacao(self):
+    def popupConfirmacao(self, mensagem):
         self.setIcon(QMessageBox.Warning)
-        self.setWindowTitle("Confirmar voto")
-        self.setText("Deseja confirmar voto?")
+        self.setWindowTitle("Aviso")
+        self.setText(mensagem)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-        self.button(QMessageBox.Yes).setText("Confirmar")
-        self.button(QMessageBox.No).setText("Cancelar")
+        self.button(QMessageBox.Yes).setText("Sim")
+        self.button(QMessageBox.No).setText("Não")
 
         resposta = self.exec()
 
         if resposta == QMessageBox.Yes:
-            # Aqui se a mensagem for "sim" o usuário vai ser enviado para a próxima tela.
+            # Aqui o usuário confirma a ação.
             pass
 
         elif resposta == QMessageBox.No:
-            # Se caso o usuário marcar como "não" ele irá voltar a página inicial.
+            # Aqui o usuário cancela a ação.
             pass
 
+    # popup utilizado para informar um erro
     def popUp_erro(self, mensagem="Ocorreu um erro."):
         self.setIcon(QMessageBox.Critical)
         self.setWindowTitle("Erro!")
@@ -34,6 +35,6 @@ class PopUpAviso(QMessageBox):
 app = QApplication(sys.argv)
 
 pop_up = PopUpAviso()
-pop_up.popupConfirmacao()
+pop_up.popupConfirmacao("Deseja confirmar voto?")
 
 sys.exit(app.exec())

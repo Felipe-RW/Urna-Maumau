@@ -145,7 +145,7 @@ class TelaPrincipalUrna(QMainWindow):
 
     def sairApp(self):
         print("Saindo...")
-
+        window.close()
 
 
 if __name__ == "__main__":
