@@ -2,7 +2,7 @@ from Backend.banco_de_dados import eleitores
 from Frontend.pop_up_aviso import PopUpAviso
 
 class ValidarEleitor():
-    def __init__(self, eleitores): 
+    def __init__(self): 
         super().__init__()
         self.db_eleitores = eleitores
         self.aviso = PopUpAviso()
