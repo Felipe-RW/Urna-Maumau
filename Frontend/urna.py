@@ -157,13 +157,13 @@ class UrnaEletronica(QMainWindow):
         """)
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    app = QApplication(sys.argv)
+#     app = QApplication(sys.argv)
 
-    janela = UrnaEletronica()
-    janela.show()
+#     janela = UrnaEletronica()
+#     janela.show()
 
-    sys.exit(app.exec())
+#     sys.exit(app.exec())
 
 
