@@ -3,16 +3,16 @@ import os
 
 pasta_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 pasta_backend = os.path.join(pasta_projeto, "Backend")
-pasta_imagens = os.path.join(pasta_projeto, "Imagens")
 
 sys.path.append(pasta_projeto)
 sys.path.append(pasta_backend)
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFrame, QLabel
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QPixmap
+from PySide6.QtGui import QFont
 
 from painel_numerico import TecladoUrna
+from menu_de_votacao import MenuVotacao
 from banco_de_dados import candidatos
 from confirmar_voto import ConfirmarVotos
 
@@ -104,7 +104,11 @@ class UrnaEletronica(QMainWindow):
         """)
 
         self.campo_informacao = QLabel("", self.painel_esquerdo)
-        self.campo_informacao.setGeometry(27, 202, 652, 35)
+        self.campo_informacao.setGeometry(27, 202, 350, 150)
+        self.campo_informacao.setAlignment(
+            Qt.AlignmentFlag.AlignLeft |
+            Qt.AlignmentFlag.AlignTop
+        )
 
         self.campo_informacao.setStyleSheet("""
             QLabel {
@@ -112,17 +116,20 @@ class UrnaEletronica(QMainWindow):
                 color: black;
                 border: 2px solid #b8b8b8;
                 border-radius: 5px;
-                padding-left: 10px;
+                padding: 10px;
+                font-size: 16px;
             }
         """)
 
         self.foto_candidato = QLabel(self.painel_esquerdo)
         self.foto_candidato.setGeometry(400, 255, 250, 300)
         self.foto_candidato.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.foto_candidato.setScaledContents(True)
 
         self.foto_candidato.setStyleSheet("""
             QLabel {
                 background-color: white;
+                color: black;
                 border: 2px solid #222222;
                 border-radius: 5px;
             }
@@ -184,6 +191,7 @@ class UrnaEletronica(QMainWindow):
         if self.numero_1.text() == "":
             self.numero_1.setText(numero)
             self.campo_informacao.setText("")
+            self.foto_candidato.clear()
 
         elif self.numero_2.text() == "":
             self.numero_2.setText(numero)
@@ -192,53 +200,24 @@ class UrnaEletronica(QMainWindow):
 
     def verificar_candidato(self):
 
-        numero_candidato = self.numero_1.text() + self.numero_2.text()
+        MenuVotacao.processar_voto(
+            self.numero_1.text(),
+            self.numero_2.text(),
+            self.campo_informacao,
+            self.foto_candidato
+        )
+
+        numero_candidato = (
+            self.numero_1.text()
+            + self.numero_2.text()
+        )
 
         self.candidato_encontrado = None
-        self.foto_candidato.clear()
 
         for candidato in candidatos:
             if candidato["numero_candidato"] == numero_candidato:
                 self.candidato_encontrado = candidato
                 break
-
-        if self.candidato_encontrado is None:
-            self.campo_informacao.setText(
-                "Candidato não encontrado."
-            )
-            return
-
-        self.campo_informacao.setText(
-            self.candidato_encontrado["nome"]
-        )
-
-        imagens_candidatos = {
-            "Machado de Assis": "MachadoDeAssis.jpg",
-            "Guimarães Rosa": "JoaoGuimaraesRosa.jpg",
-            "Graciliano Ramos": "GracilianoRamos.jpg",
-            "Jorge Amado": "JorgeAmado.jpg",
-            "José de Alencar": "JoseDeAlencar.jpg"
-        }
-
-        nome_candidato = self.candidato_encontrado["nome"]
-
-        if nome_candidato in imagens_candidatos:
-
-            caminho_imagem = os.path.join(
-                pasta_imagens,
-                imagens_candidatos[nome_candidato]
-            )
-
-            imagem = QPixmap(caminho_imagem)
-
-            if not imagem.isNull():
-                imagem = imagem.scaled(
-                    self.foto_candidato.size(),
-                    Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation
-                )
-
-                self.foto_candidato.setPixmap(imagem)
 
 
     def corrigir_numero(self):
@@ -271,7 +250,10 @@ class UrnaEletronica(QMainWindow):
         confirmar_votos = ConfirmarVotos()
 
         if self.branco_selecionado:
-            confirmar_votos.submeterVotos("BRANCO")
+
+            confirmar_votos.submeterVotos(
+                "BRANCO"
+            )
 
             self.campo_informacao.setText(
                 "Voto em branco confirmado."
@@ -282,24 +264,32 @@ class UrnaEletronica(QMainWindow):
             self.branco_selecionado = False
             return
 
+
         numero_candidato = (
             self.numero_1.text()
             + self.numero_2.text()
         )
 
         if numero_candidato == "":
+
             self.campo_informacao.setText(
                 "Digite um candidato ou aperte BRANCO."
             )
+
             return
 
+
         if len(numero_candidato) != 2:
+
             self.campo_informacao.setText(
                 "Digite o número completo do candidato."
             )
+
             return
 
+
         if self.candidato_encontrado is None:
+
             confirmar_votos.submeterVotos(
                 numero_candidato
             )
@@ -309,7 +299,9 @@ class UrnaEletronica(QMainWindow):
             )
 
             print("Voto nulo confirmado")
+
             return
+
 
         confirmar_votos.submeterVotos(
             numero_candidato
