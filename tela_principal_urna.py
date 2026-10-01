@@ -3,12 +3,14 @@ import os
 from pathlib import Path
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy
+    QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QDialog
 )
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
 base_dir=Path(__file__).resolve().parent
+
+from Frontend.urna import UrnaEletronica
 
 
 class TelaPrincipalUrna(QMainWindow):  
@@ -144,6 +146,27 @@ class TelaPrincipalUrna(QMainWindow):
 
     def iniciarVotacao(self):
         print("Ação: Carregando Tela de Votação...")
+        # Importação Local para evitar Circular Import
+        from Frontend.pop_up_titulo_eleitor import PopUpInserirTituloEleitor
+        from Frontend.urna import UrnaEletronica
+
+        popup = PopUpInserirTituloEleitor(self)
+        resultado = popup.exec()
+
+        abrir_votacao= UrnaEletronica()
+        
+
+        if resultado == QDialog.Accepted:
+            titulo_validado = popup.transformar_str()
+            print(f"Título Aprovado: {titulo_validado}. Abrindo votação...")
+            # Aqui você abre a tela da votação em si (ex: UrnaVotacao)
+            self.close()
+
+
+
+
+        else:
+            print("Operação cancelada pelo usuário. Permanecendo na Tela Principal.")
 
     def sairApp(self):
         print("Saindo...")
