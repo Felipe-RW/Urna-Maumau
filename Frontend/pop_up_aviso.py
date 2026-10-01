@@ -32,10 +32,9 @@ class PopUpAviso(QMessageBox):
         self.exec()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+# app = QApplication(sys.argv)
 
-    pop_up = PopUpAviso()
-    pop_up.popupConfirmacao("Deseja confirmar voto?")
+# pop_up = PopUpAviso()
+# pop_up.popupConfirmacao("Deseja confirmar voto?")
 
-    sys.exit(app.exec())
+# sys.exit(app.exec())
