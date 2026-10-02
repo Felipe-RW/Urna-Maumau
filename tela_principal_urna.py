@@ -3,14 +3,18 @@ import os
 from pathlib import Path
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QDialog
+    QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QDialog,
+    QMessageBox
 )
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
 base_dir=Path(__file__).resolve().parent
 
-from Frontend.urna import UrnaEletronica
+from Backend import gerar_zeresima as backend_zeresima
+from Backend import banco_de_dados
+from Backend.apurar_resultados import ApurarResultado
+from Frontend.relatorio_final import RelatorioFinal
 
 
 class TelaPrincipalUrna(QMainWindow):  
@@ -139,27 +143,66 @@ class TelaPrincipalUrna(QMainWindow):
         top_level_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
     def gerarZeresima(self):
-        print("Ação: Gerando a Zerésima...")
+        backend_zeresima.GerenciadorZeresima(self).executar()
 
     def apurarResultado(self):
-        print("Ação: Apurando Resultados...")
+        resultado = ApurarResultado(
+            candidatos=banco_de_dados.candidatos,
+            eleitores=banco_de_dados.eleitores,
+            votos_brancos=banco_de_dados.votos_brancos,
+            votos_nulos=banco_de_dados.votos_nulos,
+            eleicao_aberta=banco_de_dados.eleicao_ativa,
+        ).apurarResultado()
+
+        if resultado is None:
+            QMessageBox.warning(
+                self,
+                "Apuração indisponível",
+                "A eleição ainda não foi iniciada.",
+            )
+            return
+
+        banco_de_dados.eleicao_ativa = False
+        situacoes_relatorio = {
+            "Eleição anulada": "ANULADA",
+            "Empate": "EMPATE",
+            "Eleição finalizada": "ELEITO",
+            "Sem votos válidos": "SEM VOTOS VÁLIDOS",
+        }
+        vencedor = resultado["vencedor"]
+
+        self.relatorio_final = RelatorioFinal(
+            lista_candidatos=resultado["candidatos"],
+            lista_eleitores=resultado["eleitores"],
+            votos_brancos=resultado["votos_brancos"],
+            votos_nulos=resultado["votos_nulos"],
+            status_eleicao=situacoes_relatorio[resultado["situacao"]],
+            vencedor=vencedor["nome"] if vencedor else None,
+        )
+        self.relatorio_final.show()
 
     def iniciarVotacao(self):
+        if not banco_de_dados.eleicao_ativa:
+            QMessageBox.warning(
+                self,
+                "Zerésima obrigatória",
+                "Emita a zerésima antes de iniciar a votação.",
+            )
+            return
+
         print("Ação: Carregando Tela de Votação...")
         # Importação Local para evitar Circular Import
         from Frontend.pop_up_titulo_eleitor import PopUpInserirTituloEleitor
-        from Frontend.urna import UrnaEletronica
+        from Frontend.tela_votacao import UrnaEletronica
 
         popup = PopUpInserirTituloEleitor(self)
         resultado = popup.exec()
 
-        abrir_votacao= UrnaEletronica()
-        
-
         if resultado == QDialog.Accepted:
             titulo_validado = popup.transformar_str()
             print(f"Título Aprovado: {titulo_validado}. Abrindo votação...")
-            # Aqui você abre a tela da votação em si (ex: UrnaVotacao)
+            abrir_votacao = UrnaEletronica(eleitor=popup.eleitor_validado)
+            abrir_votacao.show()
             self.close()
 
 
@@ -169,8 +212,7 @@ class TelaPrincipalUrna(QMainWindow):
             print("Operação cancelada pelo usuário. Permanecendo na Tela Principal.")
 
     def sairApp(self):
-        print("Saindo...")
-        window.close()
+        self.close()
 
 
 if __name__ == "__main__":

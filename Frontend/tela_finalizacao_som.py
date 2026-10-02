@@ -35,7 +35,7 @@ class TelaFinalizacao(QMainWindow):
     self.som_confirmacao = QSoundEffect()
     self.som_confirmacao.setSource(
         QUrl.fromLocalFile(
-            str(Path(__file__).resolve().parent / "confirma-urna.wav")
+            str(root_dir / "Sons" / "confirma-urna.wav")
         )
     )
     print()

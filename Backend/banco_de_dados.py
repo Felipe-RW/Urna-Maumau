@@ -3,6 +3,9 @@ from pathlib import Path
 base_dir=Path(__file__).resolve().parent.parent
 
 eleicao_ativa = False
+votos_brancos = 0
+votos_nulos = 0
+votos_registrados = []
 
 candidatos =[
     #{"nome", numero do candidato, partido, total de votos, caminho da imagem}

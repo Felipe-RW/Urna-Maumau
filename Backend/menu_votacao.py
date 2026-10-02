@@ -1,6 +1,6 @@
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
-from banco_de_dados import candidatos
+from Backend.banco_de_dados import candidatos
 
 
 class MenuVotacao:

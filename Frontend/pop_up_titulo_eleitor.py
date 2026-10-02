@@ -12,12 +12,11 @@ if str(RAIZ_PROJETO) not in sys.path:
     sys.path.append(str(RAIZ_PROJETO))
 
 from Backend.validar_eleitor import ValidarEleitor
-from Frontend.urna import UrnaEletronica
-from tela_principal_urna import TelaPrincipalUrna
 
 class PopUpInserirTituloEleitor(QDialog):
     def __init__(self, parent=None, title="Justiça Eleitoral", texto_de_instrucao="Insira o número do seu título:"):
         super().__init__(parent)
+        self.eleitor_validado = None
         self.setWindowTitle(title)
         self.setMinimumWidth(300)
 
@@ -64,6 +63,7 @@ class PopUpInserirTituloEleitor(QDialog):
         eh_valido = backend.validarEleitor(titulo)
 
         if eh_valido:
+            self.eleitor_validado = eh_valido
             self.accept()
         else:
             self.label_erro.setText("Título de eleitor inválido!")

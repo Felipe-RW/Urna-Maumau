@@ -11,17 +11,18 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFrame, QLabel
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
-from painel_numerico import TecladoUrna
-from menu_de_votacao import MenuVotacao
-from banco_de_dados import candidatos
-from confirmar_voto import ConfirmarVotos
+from Frontend.painel_numerico import TecladoUrna
+from Backend.menu_votacao import MenuVotacao
+from Backend.banco_de_dados import candidatos
+from Backend.confirmar_voto import ConfirmarVotos
 
 
 class UrnaEletronica(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, eleitor=None):
         super().__init__()
 
+        self.eleitor = eleitor
         self.branco_selecionado = False
         self.candidato_encontrado = None
 
@@ -204,7 +205,8 @@ class UrnaEletronica(QMainWindow):
             self.numero_1.text(),
             self.numero_2.text(),
             self.campo_informacao,
-            self.foto_candidato
+            self.foto_candidato,
+            self.campo_informacao
         )
 
         numero_candidato = (
@@ -244,14 +246,16 @@ class UrnaEletronica(QMainWindow):
             "VOTO EM BRANCO"
         )
 
+    def _submeter_voto(self, numero_candidato):
+        self.confirmar_votos = ConfirmarVotos(self.eleitor)
+        self.confirmar_votos.submeterVotos(numero_candidato)
+        self.close()
 
     def confirmar_voto(self):
 
-        confirmar_votos = ConfirmarVotos()
-
         if self.branco_selecionado:
 
-            confirmar_votos.submeterVotos(
+            self._submeter_voto(
                 "BRANCO"
             )
 
@@ -290,7 +294,7 @@ class UrnaEletronica(QMainWindow):
 
         if self.candidato_encontrado is None:
 
-            confirmar_votos.submeterVotos(
+            self._submeter_voto(
                 numero_candidato
             )
 
@@ -303,7 +307,7 @@ class UrnaEletronica(QMainWindow):
             return
 
 
-        confirmar_votos.submeterVotos(
+        self._submeter_voto(
             numero_candidato
         )
 

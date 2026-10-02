@@ -156,20 +156,20 @@ class RelatorioFinal(QMainWindow):
 
         coluna1.addWidget(rotulo("Nome do candidato", negrito=True))
         coluna2.addWidget(rotulo("Núm.", negrito=True, alinhamento=H_CENTRO))
-        coluna3.addWidget(rotulo("votos", negrito=True, alinhamento=H_DIREITA))
+        coluna3.addWidget(rotulo("Votos (%)", negrito=True, alinhamento=H_DIREITA))
 
         if not self.candidatos:
             for _ in range(2):
                 coluna1.addWidget(rotulo(DESCONHECIDO))
                 coluna2.addWidget(rotulo("??", alinhamento=H_CENTRO))
-                coluna3.addWidget(rotulo("0.0%", alinhamento=H_DIREITA))
+                coluna3.addWidget(rotulo("0 (0.0%)", alinhamento=H_DIREITA))
         else:
             for c in self.candidatos:
                 votos = c.get("votos", 0)
                 pct = self.porcentagemCandidato(votos)
                 coluna1.addWidget(rotulo(str(c.get("nome", DESCONHECIDO))))
                 coluna2.addWidget(rotulo(f"{int(c.get('numero_candidato', 0)):02d}", alinhamento=H_CENTRO))
-                coluna3.addWidget(rotulo(f"{pct:.1f}%", alinhamento=H_DIREITA))
+                coluna3.addWidget(rotulo(f"{int(votos)} ({pct:.1f}%)", alinhamento=H_DIREITA))
 
         self.layout_papel.addLayout(colunas)
 

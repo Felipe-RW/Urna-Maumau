@@ -1,25 +1,25 @@
-from banco_de_dados import candidatos, eleitores
-# from zeresima import voto_nulo
-# from zeresima import voto_branco
+from Backend import banco_de_dados
 
 class SistemaUrna():
 
     def __init__(self):
         super().__init__()
 
-        self.db_candidatos = candidatos
-        self.db_eleitores = eleitores
+        self.db_candidatos = banco_de_dados.candidatos
+        self.db_eleitores = banco_de_dados.eleitores
 
-        self.voto_branco = 0
-        self.voto_nulo = 0
+        self.voto_branco = banco_de_dados.votos_brancos
+        self.voto_nulo = banco_de_dados.votos_nulos
 
     
     def contabilizarVoto(self, numero_candidato):
 
+        banco_de_dados.votos_registrados.append(numero_candidato)
         candidato_escolhido = None
 
         if numero_candidato == "BRANCO":
-            self.voto_branco += 1
+            banco_de_dados.votos_brancos += 1
+            self.voto_branco = banco_de_dados.votos_brancos
 
         else:
 
@@ -33,4 +33,5 @@ class SistemaUrna():
                 candidato_escolhido["votos"] += 1
 
             else:
-                self.voto_nulo += 1
+                banco_de_dados.votos_nulos += 1
+                self.voto_nulo = banco_de_dados.votos_nulos

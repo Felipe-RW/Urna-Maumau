@@ -100,6 +100,7 @@ def gerar_zeresima(candidatos, eleitores, momento=None):
     return {
         "emitido_em": momento or datetime.now(),
         "candidatos": lista_opcoes,
+        "eleitores": eleitores,
         "total_eleitores": len(eleitores),
         "total_votos": 0,
         "votos_brancos": votos_brancos,
@@ -127,6 +128,22 @@ def formatar_texto(zeresima):
         linhas.append(
             f"{c['nome'][:32]:<34}{c['numero_candidato']:^8}{'0 (0.0%)':>18}"
         )
+
+    eleitores = zeresima.get("eleitores", [])
+    linhas += [
+        linha_separadora,
+        _centralizar("ELEITORES APTOS"),
+        linha_separadora,
+        f"{'Nome':<34}{'Título':>26}",
+    ]
+
+    if eleitores:
+        for eleitor in eleitores:
+            nome = str(eleitor.get("nome", "Desconhecido"))[:34]
+            titulo = str(eleitor.get("titulo_eleitor", "??"))
+            linhas.append(f"{nome:<34}{titulo:>26}")
+    else:
+        linhas.append(_centralizar("Nenhum eleitor cadastrado"))
 
     linhas += [
         linha_separadora,
@@ -189,7 +206,6 @@ def emitir_zeresima(candidatos, eleitores):
     zeresima = gerar_zeresima(candidatos, eleitores)
     zeresima["data"] = f"{zeresima['emitido_em']:%d/%m/%Y}"
     zeresima["hora"] = f"{zeresima['emitido_em']:%H:%M:%S}"
-    zeresima["eleitores"] = eleitores
 
     bd.eleicao_ativa = True
     return zeresima
@@ -209,6 +225,35 @@ def solicitar_zeresima(parent, candidatos, eleitores):
             parent, "Urna inválida", f"A zerésima não pode ser emitida:\n{detalhes}"
         )
     return None
+
+
+class GerenciadorZeresima:
+    """Coordena a emissão da zerésima e sua exibição em popup."""
+
+    def __init__(self, parent):
+        self.parent = parent
+
+    def executar(self):
+        from PySide6.QtCore import Qt
+        from PySide6.QtGui import QFont
+        from PySide6.QtWidgets import QMessageBox
+
+        candidatos, eleitores = carregar_do_banco()
+        zeresima = solicitar_zeresima(self.parent, candidatos, eleitores)
+        if zeresima is None:
+            return None
+
+        texto = formatar_texto(zeresima)
+        hash_sha = calcular_hash(texto)
+
+        popup = QMessageBox(self.parent)
+        popup.setWindowTitle("Zerésima emitida")
+        popup.setTextFormat(Qt.TextFormat.PlainText)
+        popup.setFont(QFont("Courier New", 10))
+        popup.setText(f"{texto}\nSHA-256: {hash_sha}")
+        popup.setStandardButtons(QMessageBox.StandardButton.Ok)
+        popup.exec()
+        return zeresima
 
 
 if __name__ == "__main__":
