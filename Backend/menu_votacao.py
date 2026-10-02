@@ -7,6 +7,7 @@ class MenuVotacao:
 
     @staticmethod
     def processar_voto(numero_1: str, numero_2: str, campo_informacao, foto_candidato, info_esquerda):
+
         if len(numero_1) != 1 or len(numero_2) != 1:
             campo_informacao.setText("")
             foto_candidato.clear()
@@ -17,10 +18,12 @@ class MenuVotacao:
         numero_completo = numero_1 + numero_2
         candidato_encontrado = None
 
+
         for candidato in candidatos:
             if candidato["numero_candidato"] == numero_completo:
                 candidato_encontrado = candidato
                 break
+
 
         if candidato_encontrado:
             campo_informacao.setText("SEU VOTO VAI PARA:")
@@ -44,8 +47,10 @@ class MenuVotacao:
                 )
             else:
                 foto_candidato.setText("Imagem não\nencontrada")
+
+
         else:
-            campo_informacao.setText("Candidato não encontrado")
+            campo_informacao.setText("SEU VOTO VAI PARA:")
+            info_esquerda.setText("Candidato não encontrado\n\nVOTAR NULO")
             foto_candidato.clear()
             foto_candidato.setText("")
-            info_esquerda.setText("")
